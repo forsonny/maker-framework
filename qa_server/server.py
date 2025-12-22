@@ -18,12 +18,13 @@ import queue
 from typing import Dict, Any, Callable, Optional, List
 
 # Cross-platform non-blocking stdin handling
-try:
+# On Windows, select exists but only works with sockets, not regular files like stdin
+import platform
+
+# Only use select on Unix-like systems where it works with stdin
+HAS_SELECT = platform.system() != "Windows"
+if HAS_SELECT:
     import select
-    HAS_SELECT = True
-except ImportError:
-    # Windows doesn't have select for files
-    HAS_SELECT = False
 
 # Configure module logger
 logger = logging.getLogger(__name__)
