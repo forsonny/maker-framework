@@ -1,0 +1,17 @@
+{
+  "name": "maker-framework",
+  "owner": {
+    "name": "MAKER Framework Team",
+    "email": "maker@example.com"
+  },
+  "description": "MAKER Framework plugin marketplace - Massively Decomposed Agentic Processes",
+  "plugins": [
+    {
+      "name": "maker-framework",
+      "source": ".",
+      "description": "Massively Decomposed Agentic Processes (MAD) - Break complex tasks into atomic steps with near-zero errors",
+      "category": "automation",
+      "tags": ["decomposition", "multi-agent", "orchestration"]
+    }
+  ]
+}

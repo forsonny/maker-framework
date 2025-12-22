@@ -1,0 +1,18 @@
+# QA MCP Server Dependencies
+# Install with: pip install -r qa_server/requirements.txt
+
+# Required
+pyyaml>=6.0  # YAML configuration parsing
+typing_extensions>=4.0  # For NotRequired, TypedDict on older Python versions
+
+# Optional - for enhanced functionality
+# Uncomment based on test framework needs:
+
+# Python testing
+# pytest>=7.0
+# pytest-json-report>=1.5
+# coverage>=7.0
+
+# The MCP server itself has no hard dependencies beyond pyyaml.
+# Test framework packages (pytest, coverage, etc.) should be
+# installed separately in the project being tested.

@@ -1,0 +1,48 @@
+{
+  "id": "refactor-extract-function",
+  "type": "REFACTOR",
+  "name": "Extract Function Refactoring",
+  "description": "Pattern for extracting a code block into a separate reusable function",
+  "keywords": ["extract", "function", "refactor", "separate", "split", "modularize", "isolate"],
+  "steps": [
+    {
+      "step_number": 1,
+      "name": "Identify code block",
+      "action": "Locate and analyze the code block to extract at {{source_file}}:{{line_range}}, identify inputs and outputs",
+      "input_template": "Source file {{source_file}} exists with code block at lines {{line_range}}",
+      "output_template": "Code block identified with inputs: {{inputs}} and return value: {{return_type}}",
+      "critical": false
+    },
+    {
+      "step_number": 2,
+      "name": "Create new function",
+      "action": "Create function {{function_name}} with identified parameters and return type in {{target_location}}",
+      "input_template": "Code block analysis complete with inputs and outputs identified",
+      "output_template": "New function {{function_name}} exists with proper signature and implementation",
+      "critical": true
+    },
+    {
+      "step_number": 3,
+      "name": "Replace original with call",
+      "action": "Replace the original code block with a call to {{function_name}}, passing required arguments",
+      "input_template": "New function is implemented and tested",
+      "output_template": "Original code block replaced with function call, behavior unchanged",
+      "critical": true
+    },
+    {
+      "step_number": 4,
+      "name": "Add or update tests",
+      "action": "Add unit tests for the extracted function verifying its isolated behavior",
+      "input_template": "Function extraction complete, original behavior preserved",
+      "output_template": "Test file contains tests for {{function_name}} covering main cases",
+      "critical": false
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-12-22T00:00:00Z",
+    "last_used": null,
+    "usage_count": 0,
+    "success_count": 0,
+    "failure_count": 0
+  }
+}

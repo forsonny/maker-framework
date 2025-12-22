@@ -1,0 +1,43 @@
+# QA MCP Server Configuration
+# Copy this file to qa-config.yaml and customize as needed
+
+# Test execution settings
+test:
+  framework: auto          # auto, pytest, jest, mocha, unittest
+  patterns:                # Test file discovery patterns
+    - "**/test_*.py"
+    - "**/*_test.py"
+    - "**/*.test.js"
+    - "**/*.test.ts"
+  timeout_seconds: 300     # Maximum test execution time
+  parallel: false          # Enable parallel test execution (pytest-xdist)
+  extra_args: []           # Additional arguments passed to test framework
+  # Pre-test hooks: commands to run before tests (e.g., database reset, container setup)
+  pre_hooks: []
+  # Example: pre_hooks: ["docker-compose up -d db", "python manage.py migrate"]
+  # Post-test hooks: commands to run after tests (e.g., cleanup, report generation)
+  post_hooks: []
+  # Example: post_hooks: ["docker-compose down", "rm -rf tmp/"]
+
+# Coverage analysis settings
+coverage:
+  threshold: 70.0          # Minimum coverage percentage
+  source_patterns:         # Source files to include in coverage measurement
+    - "src/**/*.py"
+    - "src/**/*.js"
+  exclude_patterns:        # Files to exclude from coverage
+    - "**/test/**"
+    - "**/tests/**"
+    - "**/__pycache__/**"
+  timeout_seconds: 300     # Coverage collection timeout
+
+# Regression analysis settings
+regression:
+  baseline_file: "qa-reports/baseline.json"
+  auto_update_baseline: false
+  ignore_flaky: true
+  flaky_threshold: 3       # Flips before marking test as flaky
+
+# General settings
+reports_dir: "qa-reports"  # Directory for test reports
+verbose: false             # Enable verbose output

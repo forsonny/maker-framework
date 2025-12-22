@@ -1,0 +1,72 @@
+{
+  "id": "crud-api-endpoint",
+  "type": "CRUD",
+  "name": "CRUD API Endpoint",
+  "description": "Pattern for creating RESTful API endpoints with handler, validation, and tests",
+  "keywords": ["api", "endpoint", "route", "handler", "controller", "rest", "crud"],
+  "steps": [
+    {
+      "step_number": 1,
+      "name": "Create route file",
+      "action": "Create new route file at {{routes_path}}/{{resource_name}}.ts with basic Express/Fastify router setup",
+      "input_template": "Routes directory exists at {{routes_path}}",
+      "output_template": "Route file {{routes_path}}/{{resource_name}}.ts exists with router initialization",
+      "critical": false
+    },
+    {
+      "step_number": 2,
+      "name": "Add request handler",
+      "action": "Implement {{http_method}} handler function for {{endpoint_path}} in the route file",
+      "input_template": "Route file exists with router setup",
+      "output_template": "Handler function implemented with request/response types",
+      "critical": true
+    },
+    {
+      "step_number": 3,
+      "name": "Add input validation",
+      "action": "Add validation schema and middleware for request body/params using {{validation_library}}",
+      "input_template": "Handler function exists in route file",
+      "output_template": "Validation schema defined and middleware applied to route",
+      "critical": false
+    },
+    {
+      "step_number": 4,
+      "name": "Add error handling",
+      "action": "Wrap handler in try-catch and add appropriate error responses for common failure cases",
+      "input_template": "Handler and validation are in place",
+      "output_template": "Error handling covers validation errors, not found, and server errors",
+      "critical": false
+    },
+    {
+      "step_number": 5,
+      "name": "Create test file",
+      "action": "Create test file at {{tests_path}}/{{resource_name}}.test.ts with test setup",
+      "input_template": "Route implementation is complete",
+      "output_template": "Test file exists with describe block and test utilities imported",
+      "critical": false
+    },
+    {
+      "step_number": 6,
+      "name": "Add endpoint tests",
+      "action": "Write tests for success case, validation error case, and error handling",
+      "input_template": "Test file exists with setup",
+      "output_template": "At least 3 test cases: success, validation failure, error handling",
+      "critical": true
+    },
+    {
+      "step_number": 7,
+      "name": "Update routes index",
+      "action": "Import and register the new route in {{routes_path}}/index.ts",
+      "input_template": "Route file and tests are complete",
+      "output_template": "New route is imported and mounted in the routes index",
+      "critical": false
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-12-22T00:00:00Z",
+    "last_used": null,
+    "usage_count": 0,
+    "success_count": 0,
+    "failure_count": 0
+  }
+}

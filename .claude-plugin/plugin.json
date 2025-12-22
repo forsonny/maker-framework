@@ -1,0 +1,20 @@
+{
+  "name": "maker-framework",
+  "version": "1.0.0",
+  "description": "Massively Decomposed Agentic Processes (MAD) - Break complex tasks into atomic steps with near-zero errors",
+  "author": {
+    "name": "MAKER Framework Team",
+    "email": "maker@example.com",
+    "url": "https://github.com/forsonny/maker-framework"
+  },
+  "homepage": "https://github.com/forsonny/maker-framework",
+  "repository": "https://github.com/forsonny/maker-framework",
+  "license": "MIT",
+  "keywords": [
+    "automation",
+    "decomposition",
+    "multi-agent",
+    "orchestration",
+    "task-management"
+  ]
+}

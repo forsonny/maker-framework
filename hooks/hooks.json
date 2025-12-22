@@ -1,0 +1,28 @@
+{
+  "description": "MAKER Framework validation and checkpoint hooks",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-on-complete.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
