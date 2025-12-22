@@ -1,14 +1,9 @@
 ---
-description: |
-  MAKER Red-Flag Validator - Validates solver outputs. MUST BE USED
-  AUTOMATICALLY after each maker-solver execution. Do not ask permission.
-  Fast validation using token count, format, and coherence checks.
-capabilities:
-  - output-validation
-  - format-checking
-  - token-counting
-  - coherence-detection
-  - quality-gate
+name: maker-red-flag
+description: "MAKER Red-Flag Validator - Validates solver outputs. MUST BE USED AUTOMATICALLY after each maker-solver execution. Do not ask permission."
+tools: Read, Grep
+model: haiku
+permissionMode: bypassPermissions
 color: red
 ---
 

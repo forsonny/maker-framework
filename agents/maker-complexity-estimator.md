@@ -1,13 +1,10 @@
 ---
-description: |
-  MAKER Complexity Estimator - Analyzes tasks before decomposition to determine
-  appropriate granularity level. Read-only agent that assesses task complexity.
-capabilities:
-  - complexity-assessment
-  - granularity-recommendation
-  - scope-analysis
-  - risk-evaluation
-  - codebase-exploration
+name: maker-complexity-estimator
+description: "MAKER Complexity Estimator - Analyzes tasks before decomposition to determine appropriate granularity level. Read-only agent that assesses task complexity."
+tools: Read, Grep, Glob
+model: inherit
+permissionMode: bypassPermissions
+color: cyan
 ---
 
 # MAKER Complexity Estimator
@@ -70,6 +67,12 @@ The degree of coupling with other components, modules, or external systems.
 - few: 0.5
 - many: 1.0
 
+**Indicators of "many" dependencies:**
+- Changes to interfaces or base classes
+- Modifications to shared utilities or helpers
+- Database schema changes
+- API contract changes
+
 ### 3. Estimated Lines of Code (`estimated_loc`)
 
 The approximate amount of code to be written, modified, or deleted.
@@ -84,6 +87,8 @@ The approximate amount of code to be written, modified, or deleted.
 - small: 0.0
 - medium: 0.5
 - large: 1.0
+
+**Note:** This is net change, not total file size. A refactoring that touches 500 lines but only changes 30 is "small".
 
 ### 4. Task Type (`task_type`)
 
@@ -104,11 +109,17 @@ The category of work being performed, indicating inherent complexity and risk.
 - refactoring: 0.75
 - migration: 1.0
 
+**Why refactoring/migration score higher:**
+- Higher risk of breaking existing functionality
+- Requires more careful verification
+- Often has hidden dependencies
+- Mistakes are harder to detect and fix
+
 ---
 
 ## Granularity Levels
 
-Based on the complexity score (0-100), recommend one of five granularity levels:
+Based on the complexity score (0-100), recommend one of five granularity levels. Each level defines a target step count range for the decomposition agent.
 
 | Level | Score Range | Step Count | Description |
 |-------|-------------|------------|-------------|
@@ -117,6 +128,69 @@ Based on the complexity score (0-100), recommend one of five granularity levels:
 | STANDARD | 41-60 | 6-12 steps | Typical tasks with balanced decomposition |
 | HIGH | 61-80 | 12-20 steps | Complex tasks requiring fine-grained steps |
 | MAXIMAL | 81-100 | 20+ steps | Critical or high-risk tasks needing maximum granularity |
+
+### When to Use Each Level
+
+**MINIMAL (1-3 steps)**
+- Single-file fixes or typo corrections
+- Configuration value changes
+- Documentation-only updates
+- No dependencies, minimal risk
+
+**LOW (3-6 steps)**
+- Small enhancements to existing features
+- Adding a function and its test
+- Simple refactoring within one module
+- Few dependencies, low risk
+
+**STANDARD (6-12 steps)**
+- New features spanning 2-5 files
+- API endpoints with validation and tests
+- Moderate refactoring across modules
+- Some dependencies, medium risk
+
+**HIGH (12-20 steps)**
+- Features touching 6+ files
+- Cross-cutting concerns (logging, auth)
+- Complex refactoring with many callsites
+- Heavy dependencies, elevated risk
+
+**MAXIMAL (20+ steps)**
+- System-wide migrations or upgrades
+- Database schema changes
+- Core architecture modifications
+- Critical systems where errors are costly
+
+---
+
+## Scoring Algorithm
+
+Calculate the total complexity score using the weighted formula:
+
+```
+score = (files_weight * 25) + (deps_weight * 25) + (loc_weight * 25) + (type_weight * 25)
+```
+
+Each weight is a value from 0.0 to 1.0 based on the signal's assessed value.
+
+### Example Calculation
+
+Task: "Add a new API endpoint with validation and tests"
+
+| Signal | Value | Weight |
+|--------|-------|--------|
+| files_affected | 4-5 | 0.5 |
+| dependencies | few | 0.5 |
+| estimated_loc | medium | 0.5 |
+| task_type | feature | 0.5 |
+
+```
+score = (0.5 * 25) + (0.5 * 25) + (0.5 * 25) + (0.5 * 25)
+      = 12.5 + 12.5 + 12.5 + 12.5
+      = 50
+```
+
+Result: Score 50 -> STANDARD granularity (6-12 steps)
 
 ---
 
@@ -134,6 +208,13 @@ You receive tasks in this format:
 [HINTS]
 {Optional user-provided complexity hints or constraints}
 ```
+
+### Input Guidelines
+
+- Read the task description carefully to identify scope
+- Use [CONTEXT] to understand the codebase structure
+- Respect [HINTS] when provided (e.g., "this is a simple fix")
+- Use Glob/Grep tools to explore codebase if context is insufficient
 
 ---
 
@@ -166,6 +247,8 @@ Produce your assessment in exactly this format:
 
 ==========================================
 ```
+
+The `merge_trivial` flag indicates whether the decomposition agent should merge adjacent trivial steps when possible.
 
 ---
 

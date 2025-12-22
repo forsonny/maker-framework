@@ -1,13 +1,10 @@
 ---
-description: |
-  MAKER Parallel Coordinator - Analyzes decompositions to identify parallelizable
-  step groups and generates execution waves for distributed execution.
-capabilities:
-  - parallel-analysis
-  - wave-generation
-  - dependency-graphing
-  - execution-planning
-  - throughput-optimization
+name: maker-parallel-coordinator
+description: "MAKER Parallel Coordinator - Analyzes decompositions to identify parallelizable step groups and generates execution waves for distributed execution."
+tools: Read, Grep, Glob
+model: haiku
+permissionMode: bypassPermissions
+color: magenta
 ---
 
 # MAKER Parallel Coordinator (Microagent)

@@ -1,14 +1,10 @@
 ---
-description: |
-  MAKER Decomposition Discriminator - Validates task decompositions. MUST BE
-  USED AUTOMATICALLY after maker-decomposition. Do not ask permission.
-  Checks completeness, atomicity, dependencies, and state flow.
-capabilities:
-  - decomposition-validation
-  - atomicity-checking
-  - dependency-analysis
-  - state-flow-verification
-  - testability-assessment
+name: maker-decomposition-discriminator
+description: "MAKER Decomposition Discriminator - Validates task decompositions. MUST BE USED AUTOMATICALLY after maker-decomposition. Do not ask permission."
+tools: Read, Grep, Glob, mcp__claude-qa__check_prd_alignment
+model: inherit
+permissionMode: bypassPermissions
+color: light blue
 ---
 
 # MAKER Decomposition Discriminator
@@ -75,8 +71,8 @@ Completeness Score: {0-100}%
 
 Issues Found:
   {List each completeness issue, or "None"}
-  * Issue 1: {description}
-  * Issue 2: {description}
+  • Issue 1: {description}
+  • Issue 2: {description}
 
 ------------------------------------------
 2. ATOMICITY CHECK                   [{PASS/FAIL}]
@@ -105,7 +101,7 @@ Atomicity Summary:
 
 Non-Atomic Steps Requiring Split:
   {List each non-atomic step with suggested splits, or "None"}
-  * Step [XXX]: "{action}"
+  • Step [XXX]: "{action}"
     Problem: {why it's not atomic}
     Split Into:
       - {sub-action 1}
@@ -128,11 +124,11 @@ Dependency Graph Analysis:
 
   Missing Dependencies:
   {List steps that should have dependencies but don't}
-    * Step [XXX] uses output from [YYY] but doesn't list it as dependency
+    • Step [XXX] uses output from [YYY] but doesn't list it as dependency
 
   Invalid Dependencies:
   {List dependencies that reference non-existent steps}
-    * Step [XXX] depends on [YYY] which doesn't exist
+    • Step [XXX] depends on [YYY] which doesn't exist
 
   Dependency Score: {0-100}%
 
@@ -165,7 +161,7 @@ State Transition Analysis:
 
   State Flow Issues:
   {List any gaps or mismatches in state transitions}
-    * Between [XXX] and [YYY]: {description of mismatch}
+    • Between [XXX] and [YYY]: {description of mismatch}
 
 ------------------------------------------
 5. CRITICAL STEP ANALYSIS            [{PASS/FAIL}]
@@ -176,13 +172,13 @@ Steps Marked Critical: {list step numbers}
 Review of Critical Markings:
 
   Correctly Marked as Critical:
-    * [XXX]: {why this is correctly marked critical}
+    • [XXX]: {why this is correctly marked critical}
 
   Should Be Critical but Not Marked:
-    * [YYY]: {why this should be critical}
+    • [YYY]: {why this should be critical}
 
   Unnecessarily Marked Critical:
-    * [ZZZ]: {why this doesn't need to be critical}
+    • [ZZZ]: {why this doesn't need to be critical}
 
 ------------------------------------------
 6. TESTABILITY CHECK                 [{PASS/FAIL}]
@@ -202,6 +198,12 @@ Testability Analysis:
   Test Generation Recommendations:
   {For each code-producing step, note if tests should be generated}
     - [001]: {needs unit tests / no tests needed / integration test recommended}
+
+  PRD Alignment (if applicable):
+  {If a PRD file is provided in the task context, use mcp__claude-qa__check_prd_alignment}
+    Alignment Checked: {yes/no}
+    Alignment Score: {0-100% or "N/A"}
+    Unmatched Requirements: {list or "none"}
 
   Testability Score: {0-100}%
 

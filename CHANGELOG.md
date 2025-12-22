@@ -13,12 +13,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestrator was bypassing the MAKER workflow by writing files directly instead of delegating to maker-solver
 - Added explicit "Orchestration Only" constraints forbidding direct file modifications
 - All file operations now properly flow through maker-solver subagent
+- **Critical**: Added missing `tools` frontmatter to all 10 agents
+  - Without tool restrictions, agents had access to ALL tools, causing role boundary violations
+  - Decomposition agent was writing files instead of just returning decomposition plans
+- Synced plugin agents with original framework subagents to ensure consistency
 
 ### Changed
 
 - `commands/maker.md` allowed-tools reduced to `Read, Glob, Grep`
 - `skills/maker-orchestrator/SKILL.md` allowed-tools reduced to `Read, Glob, Grep`
 - Added detailed forbidden actions documentation to prevent workflow bypass
+- Agent frontmatter now includes:
+  - `tools:` - Restricts which tools each agent can use
+  - `model:` - Specifies model (inherit or haiku)
+  - `permissionMode:` - Controls permission behavior
+
+### Agent Tool Restrictions
+
+| Agent | Tools |
+|-------|-------|
+| maker-decomposition | Read, Grep, Glob |
+| maker-solver | Read, Edit, Write, Bash, Grep, Glob |
+| maker-red-flag | Read, Grep |
+| maker-reviewer | Read, Grep, Glob, WebFetch, WebSearch, Bash, mcp__claude-qa__* |
+| maker-decomposition-discriminator | Read, Grep, Glob, mcp__claude-qa__check_prd_alignment |
+| maker-solution-discriminator | Read, Grep, Glob |
+| maker-complexity-estimator | Read, Grep, Glob |
+| maker-checkpoint-manager | Read, Write, Bash, Glob |
+| maker-parallel-coordinator | Read, Grep, Glob |
+| maker-cache-manager | Read, Grep, Glob, Write |
 
 ## [1.0.4] - 2025-12-22
 

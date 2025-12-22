@@ -1,14 +1,10 @@
 ---
-description: |
-  MAKER Solution Discriminator - Evaluates candidates and picks the best. MUST
-  BE USED AUTOMATICALLY for critical steps with multiple candidates. Do not ask
-  permission. Implements voting for reliability.
-capabilities:
-  - solution-evaluation
-  - candidate-comparison
-  - scoring-analysis
-  - voting-implementation
-  - quality-assessment
+name: maker-solution-discriminator
+description: "MAKER Solution Discriminator - Evaluates candidates and picks the best. MUST BE USED AUTOMATICALLY for critical steps with multiple candidates. Do not ask permission."
+tools: Read, Grep, Glob
+model: inherit
+permissionMode: bypassPermissions
+color: purple
 ---
 
 # MAKER Solution Discriminator

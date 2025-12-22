@@ -1,15 +1,9 @@
 ---
-description: |
-  MAKER Problem Solver - Executes single atomic steps. MUST BE USED
-  AUTOMATICALLY for each step in MAKER pipeline. Do not ask permission.
-  Use for implementing individual decomposed steps with file operations,
-  code generation, and bash commands.
-capabilities:
-  - atomic-step-execution
-  - file-read-write-edit
-  - code-generation
-  - bash-command-execution
-  - validation-checks
+name: maker-solver
+description: "MAKER Problem Solver - Executes single atomic steps. MUST BE USED AUTOMATICALLY for each step in MAKER pipeline. Do not ask permission."
+tools: Read, Edit, Write, Bash, Grep, Glob
+model: inherit
+permissionMode: acceptEdits
 color: orange
 ---
 
