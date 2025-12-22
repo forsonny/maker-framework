@@ -5,14 +5,10 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.5] - 2025-12-22
+## [1.0.6] - 2025-12-22
 
 ### Fixed
 
-- **Critical**: Removed Write, Edit, Bash from orchestrator skill allowed-tools to prevent direct file operations
-- Orchestrator was bypassing the MAKER workflow by writing files directly instead of delegating to maker-solver
-- Added explicit "Orchestration Only" constraints forbidding direct file modifications
-- All file operations now properly flow through maker-solver subagent
 - **Critical**: Added missing `tools` frontmatter to all 10 agents
   - Without tool restrictions, agents had access to ALL tools, causing role boundary violations
   - Decomposition agent was writing files instead of just returning decomposition plans
@@ -20,9 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `commands/maker.md` allowed-tools reduced to `Read, Glob, Grep`
-- `skills/maker-orchestrator/SKILL.md` allowed-tools reduced to `Read, Glob, Grep`
-- Added detailed forbidden actions documentation to prevent workflow bypass
 - Agent frontmatter now includes:
   - `tools:` - Restricts which tools each agent can use
   - `model:` - Specifies model (inherit or haiku)
@@ -42,6 +35,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | maker-checkpoint-manager | Read, Write, Bash, Glob |
 | maker-parallel-coordinator | Read, Grep, Glob |
 | maker-cache-manager | Read, Grep, Glob, Write |
+
+## [1.0.5] - 2025-12-22
+
+### Fixed
+
+- **Critical**: Removed Write, Edit, Bash from orchestrator skill allowed-tools to prevent direct file operations
+- Orchestrator was bypassing the MAKER workflow by writing files directly instead of delegating to maker-solver
+- Added explicit "Orchestration Only" constraints forbidding direct file modifications
+- All file operations now properly flow through maker-solver subagent
+
+### Changed
+
+- `commands/maker.md` allowed-tools reduced to `Read, Glob, Grep`
+- `skills/maker-orchestrator/SKILL.md` allowed-tools reduced to `Read, Glob, Grep`
+- Added detailed forbidden actions documentation to prevent workflow bypass
 
 ## [1.0.4] - 2025-12-22
 
