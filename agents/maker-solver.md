@@ -10,6 +10,7 @@ capabilities:
   - code-generation
   - bash-command-execution
   - validation-checks
+color: orange
 ---
 
 # MAKER Problem Solver (Microagent)

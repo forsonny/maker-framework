@@ -9,6 +9,7 @@ capabilities:
   - token-counting
   - coherence-detection
   - quality-gate
+color: red
 ---
 
 # MAKER Red-Flag Validator

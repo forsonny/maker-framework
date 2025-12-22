@@ -9,6 +9,7 @@ capabilities:
   - atomic-step-generation
   - dependency-mapping
   - parallel-opportunity-detection
+color: green
 ---
 
 # MAKER Decomposition Agent

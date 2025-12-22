@@ -8,6 +8,7 @@ capabilities:
   - cache-invalidation
   - similarity-scoring
   - cache-indexing
+color: blue
 ---
 
 # MAKER Cache Manager (Microagent)

@@ -10,6 +10,7 @@ capabilities:
   - integration-verification
   - code-quality-assessment
   - qa-engine-integration
+color: yellow
 ---
 
 # MAKER Reviewer
