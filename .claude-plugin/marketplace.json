@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "maker-framework",
-      "source": ".",
+      "source": "./",
       "description": "Massively Decomposed Agentic Processes (MAD) - Break complex tasks into atomic steps with near-zero errors",
       "category": "automation",
       "tags": ["decomposition", "multi-agent", "orchestration"]
