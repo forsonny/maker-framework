@@ -5,6 +5,16 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-12-22
+
+### Fixed
+
+- **Critical**: Fixed MCP server `maker-qa` failing to start due to incorrect path configuration
+  - `cwd` was incorrectly set to `${CLAUDE_PLUGIN_ROOT}/qa_server` (inside the package)
+  - `PYTHONPATH` was also pointing inside the package
+  - Python couldn't find the `qa_server` module when running `-m qa_server` from inside itself
+  - Changed both paths to `${CLAUDE_PLUGIN_ROOT}` (the parent directory containing the package)
+
 ## [1.0.6] - 2025-12-22
 
 ### Fixed

@@ -3,10 +3,10 @@
     "maker-qa": {
       "command": "python",
       "args": ["-m", "qa_server"],
-      "cwd": "${CLAUDE_PLUGIN_ROOT}/qa_server",
+      "cwd": "${CLAUDE_PLUGIN_ROOT}",
       "env": {
         "MAKER_CACHE_DIR": "${CLAUDE_PLUGIN_ROOT}/cache",
-        "PYTHONPATH": "${CLAUDE_PLUGIN_ROOT}/qa_server"
+        "PYTHONPATH": "${CLAUDE_PLUGIN_ROOT}"
       }
     }
   }
