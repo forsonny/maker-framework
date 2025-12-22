@@ -5,13 +5,34 @@ description: |
   development tasks are detected. Triggers on keywords: create, build, implement,
   add, develop, make, set up, configure, refactor, migrate. Decomposes tasks
   into atomic steps and coordinates execution through specialized agents.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+allowed-tools: Read, Glob, Grep
 ---
 
 # MAKER Orchestrator Skill
 
 This skill automatically activates when Claude detects complex development tasks
 that would benefit from systematic decomposition.
+
+## CRITICAL: You Are an Orchestrator, NOT an Executor
+
+**YOU MUST NOT write, edit, or execute files directly.**
+
+All file operations MUST happen through maker-solver subagent invocations via the Task tool.
+
+**Your role is STRICTLY to:**
+1. Invoke subagents via Task tool
+2. Pass state between steps
+3. Handle validation and retry logic
+4. Report progress
+
+**FORBIDDEN ACTIONS:**
+- Using Write tool directly (you don't have it)
+- Using Edit tool directly (you don't have it)
+- Using Bash for file operations (you don't have it)
+- Creating any files yourself
+- Modifying any files yourself
+
+**If you need to create/modify a file, you MUST invoke maker-solver via Task tool.**
 
 ## Trigger Phrases
 
@@ -23,14 +44,14 @@ Activate when user message contains:
 
 ## Workflow
 
-1. **Complexity Assessment**: Use maker-complexity-estimator agent
-2. **Decomposition**: Use maker-decomposition agent
-3. **Validation**: Use maker-decomposition-discriminator agent
-4. **Execution**: Loop through steps with maker-solver agent
-5. **Step Validation**: Use maker-red-flag agent after each step
-6. **Voting (Critical Steps)**: Use maker-solution-discriminator agent
-7. **Review**: Use maker-reviewer agent for final check
-8. **Fix Loop**: If issues found, fix and re-review until APPROVED
+1. **Complexity Assessment**: Task tool with subagent_type="maker-complexity-estimator"
+2. **Decomposition**: Task tool with subagent_type="maker-decomposition"
+3. **Validation**: Task tool with subagent_type="maker-decomposition-discriminator"
+4. **Execution**: FOR EACH STEP, invoke maker-solver via Task tool
+5. **Step Validation**: Task tool with subagent_type="maker-red-flag" after each step
+6. **Voting (Critical Steps)**: Task tool with subagent_type="maker-solution-discriminator"
+7. **Review**: Task tool with subagent_type="maker-reviewer" for final check
+8. **Fix Loop**: If issues found, fix via maker-solver and re-review until APPROVED
 
 ## Agent Coordination
 

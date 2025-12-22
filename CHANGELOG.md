@@ -5,6 +5,21 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2025-12-22
+
+### Fixed
+
+- **Critical**: Removed Write, Edit, Bash from orchestrator skill allowed-tools to prevent direct file operations
+- Orchestrator was bypassing the MAKER workflow by writing files directly instead of delegating to maker-solver
+- Added explicit "Orchestration Only" constraints forbidding direct file modifications
+- All file operations now properly flow through maker-solver subagent
+
+### Changed
+
+- `commands/maker.md` allowed-tools reduced to `Read, Glob, Grep`
+- `skills/maker-orchestrator/SKILL.md` allowed-tools reduced to `Read, Glob, Grep`
+- Added detailed forbidden actions documentation to prevent workflow bypass
+
 ## [1.0.4] - 2025-12-22
 
 ### Added
