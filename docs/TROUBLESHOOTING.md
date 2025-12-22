@@ -295,7 +295,23 @@ This will show full agent outputs instead of just progress messages.
 - Check 8 reports "SKIPPED - QA MCP not configured"
 - QA tools never execute
 
-**Solutions:**
+**Solutions (Plugin Mode):**
+
+The QA MCP server is bundled with the plugin and should start automatically. If Check 8 is skipped:
+
+1. **Verify plugin is installed correctly**
+   Check that the MAKER framework plugin is properly installed in Claude Code.
+
+2. **Check Claude Code logs** for MCP server startup errors
+   Look for errors related to `maker-qa` server.
+
+3. **Restart Claude Code** to reload the plugin and restart MCP servers.
+
+4. **Verify ping tool works**
+   The reviewer agent first calls `mcp__plugin_maker-framework_maker-qa__ping` to detect the server.
+   If ping fails, the QA checks are skipped.
+
+**Solutions (Standalone Mode):**
 
 1. **Verify .mcp.json exists**
    ```bash
@@ -316,11 +332,8 @@ This will show full agent outputs instead of just progress messages.
    }
    ```
 
-3. **Install QA engine package**
-   ```bash
-   pip install claude-qa-engine-mcp
-   python -m qa_server --help
-   ```
+3. **Verify ping tool works**
+   The reviewer agent calls `mcp__claude-qa__ping` to detect the server.
 
 4. **Restart Claude Code** to reload MCP configuration
 
@@ -362,20 +375,22 @@ This will show full agent outputs instead of just progress messages.
 
 **Symptoms:**
 - `pytest` works directly
-- `mcp__claude-qa__run_tests` reports failures
+- QA MCP `run_tests` tool reports failures
+  (Plugin: `mcp__plugin_maker-framework_maker-qa__run_tests`)
+  (Standalone: `mcp__claude-qa__run_tests`)
 
 **Solutions:**
 
 1. **Check working directory**
-   
+
    QA MCP may run from different directory. Use absolute paths in test configuration.
 
 2. **Check environment isolation**
-   
+
    MCP server may have different environment variables. Verify in qa-config.yaml.
 
 3. **Check test discovery patterns**
-   
+
    Ensure qa-config.yaml test patterns match your project structure.
 
 ---

@@ -5,6 +5,29 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-12-22
+
+### Fixed
+
+- **Critical**: Fixed QA MCP tools not being triggered during maker-reviewer Check 8
+  - Root cause: Tool names in agent definitions didn't match actual plugin tool names
+  - Agent definitions used `mcp__claude-qa__*` but plugin provides `mcp__plugin_maker-framework_maker-qa__*`
+  - Updated all tool references in `maker-reviewer.md` and `maker-decomposition-discriminator.md`
+
+### Changed
+
+- **QA MCP detection method**: Changed from file-based (`.mcp.json` lookup) to ping-based detection
+  - Reviewer now calls `mcp__plugin_maker-framework_maker-qa__ping` to verify server availability
+  - More reliable detection that works in both plugin and standalone modes
+  - Added `ping` tool to maker-reviewer's tool list
+
+### Updated
+
+- `agents/maker-reviewer.md`: Updated all QA tool references to use plugin-qualified names
+- `agents/maker-decomposition-discriminator.md`: Updated `check_prd_alignment` tool reference
+- `docs/QA-MCP-INTEGRATION.md`: Added "Tool Names (Plugin Context)" section, distinguished plugin vs standalone modes
+- `docs/TROUBLESHOOTING.md`: Split QA troubleshooting into plugin mode and standalone mode solutions
+
 ## [1.1.1] - 2025-12-22
 
 ### Added

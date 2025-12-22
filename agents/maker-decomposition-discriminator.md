@@ -1,7 +1,7 @@
 ---
 name: maker-decomposition-discriminator
 description: "MAKER Decomposition Discriminator - Validates task decompositions. MUST BE USED AUTOMATICALLY after maker-decomposition. Do not ask permission."
-tools: Read, Grep, Glob, mcp__claude-qa__check_prd_alignment
+tools: Read, Grep, Glob, mcp__plugin_maker-framework_maker-qa__check_prd_alignment
 model: inherit
 permissionMode: bypassPermissions
 color: light blue
@@ -200,7 +200,7 @@ Testability Analysis:
     - [001]: {needs unit tests / no tests needed / integration test recommended}
 
   PRD Alignment (if applicable):
-  {If a PRD file is provided in the task context, use mcp__claude-qa__check_prd_alignment}
+  {If a PRD file is provided in the task context, use mcp__plugin_maker-framework_maker-qa__check_prd_alignment}
     Alignment Checked: {yes/no}
     Alignment Score: {0-100% or "N/A"}
     Unmatched Requirements: {list or "none"}

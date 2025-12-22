@@ -95,12 +95,24 @@ echo '{"jsonrpc":"2.0","id":1,"method":"ping","params":{}}' | python -m qa_serve
 
 The maker-reviewer agent uses QA MCP tools during **Check 8: QA Engine Validation**.
 
+### Tool Names (Plugin Context)
+
+When using the MAKER framework as a Claude Code plugin, QA tools are named with the plugin prefix:
+- `mcp__plugin_maker-framework_maker-qa__run_tests`
+- `mcp__plugin_maker-framework_maker-qa__get_coverage`
+- `mcp__plugin_maker-framework_maker-qa__check_regressions`
+- `mcp__plugin_maker-framework_maker-qa__generate_tests`
+- `mcp__plugin_maker-framework_maker-qa__check_prd_alignment`
+- `mcp__plugin_maker-framework_maker-qa__aggregate_qa_report`
+- `mcp__plugin_maker-framework_maker-qa__ping`
+
 ### When QA Tools Are Invoked
 
-1. **After Check 7 (Run Tests):** If QA MCP is configured, maker-reviewer invokes QA tools
-2. **Conditional Execution:** QA checks are SKIPPED if:
+1. **After Check 7 (Run Tests):** maker-reviewer invokes QA tools
+2. **Detection:** The reviewer first calls `ping` to verify the QA MCP server is available
+3. **Conditional Execution:** QA checks are SKIPPED if:
+   - Ping fails (QA MCP server not available)
    - No test files exist in the project
-   - QA MCP server is not configured
    - Task explicitly marked as "no-tests"
 
 ### Issue Reporting
@@ -120,9 +132,30 @@ If QA checks fail, maker-reviewer reports issues in standard format:
 
 ## Configuration
 
-### Step 1: Create MCP Configuration
+### Plugin Mode (Automatic)
 
-Create or update \`.mcp.json\` in the project root:
+When using the MAKER framework as a Claude Code plugin, the QA MCP server is **automatically configured**. No manual setup is required.
+
+The plugin's `.mcp.json` defines the server:
+\`\`\`json
+{
+  "mcpServers": {
+    "maker-qa": {
+      "command": "python",
+      "args": ["-m", "qa_server"],
+      "cwd": "${CLAUDE_PLUGIN_ROOT}",
+      "env": {
+        "MAKER_CACHE_DIR": "${CLAUDE_PLUGIN_ROOT}/cache",
+        "PYTHONPATH": "${CLAUDE_PLUGIN_ROOT}"
+      }
+    }
+  }
+}
+\`\`\`
+
+### Standalone Mode (Manual Configuration)
+
+If using the MAKER framework standalone (not as a plugin), create \`.mcp.json\` in the project root:
 
 \`\`\`json
 {
@@ -136,9 +169,9 @@ Create or update \`.mcp.json\` in the project root:
 }
 \`\`\`
 
-### Step 2: Install QA Server
+### Install Dependencies
 
-The QA server is included in the MAKER framework. Ensure dependencies are installed:
+Ensure dependencies are installed:
 
 \`\`\`bash
 # Install Python dependencies
@@ -148,14 +181,9 @@ pip install pyyaml
 pip install pytest pytest-json-report coverage  # For Python projects
 \`\`\`
 
-### Step 3: Verify Configuration
+### Verify Configuration
 
-Test that the MCP server starts correctly:
-
-\`\`\`bash
-cd maker-framework
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python -m qa_server
-\`\`\`
+Test that the MCP server is available by invoking the ping tool. The reviewer agent does this automatically during Check 8.
 
 ### Environment Requirements
 
@@ -199,10 +227,17 @@ test:
 
 **Symptom:** maker-reviewer reports "Check 8: SKIPPED - QA MCP not configured"
 
-**Solution:**
+**Solution (Plugin Mode):**
+1. The QA MCP server is bundled with the plugin and should start automatically
+2. Verify the plugin is installed correctly
+3. Check the Claude Code logs for MCP server startup errors
+4. Restart Claude Code to reload the plugin
+
+**Solution (Standalone Mode):**
 1. Verify \`.mcp.json\` exists and is valid JSON
 2. Check that Python and qa_server module are available
 3. Restart Claude Code to reload MCP configuration
+4. Verify the ping tool works: `mcp__claude-qa__ping` or `mcp__plugin_maker-framework_maker-qa__ping`
 
 ### Tests Fail to Run
 
@@ -342,7 +377,8 @@ During decomposition validation, the discriminator can invoke `check_prd_alignme
 
 **How It Works:**
 1. Discriminator detects PRD reference in task context
-2. Invokes `mcp__claude-qa__check_prd_alignment` with PRD path
+2. Invokes `mcp__plugin_maker-framework_maker-qa__check_prd_alignment` with PRD path
+   (or `mcp__claude-qa__check_prd_alignment` in standalone mode)
 3. Reports alignment score in Testability Check (Check 6)
 4. Flags low alignment (<70%) as issue requiring revision
 
@@ -396,7 +432,9 @@ UNIFIED QA REPORT
 
 ### Configuration for Multi-Stage
 
-Ensure all stages can access QA tools by configuring `.mcp.json` in your project:
+**Plugin Mode:** QA tools are automatically available to all stages - no configuration needed.
+
+**Standalone Mode:** Ensure all stages can access QA tools by configuring `.mcp.json` in your project:
 
 ```json
 {
@@ -424,6 +462,6 @@ With full QA suite integration, the MAKER pipeline reports:
 ## References
 
 - MAKER Framework: [CLAUDE.md](../CLAUDE.md)
-- maker-reviewer Agent: [subagents/maker-reviewer.md](../subagents/maker-reviewer.md)
-- maker-decomposition-discriminator Agent: [subagents/maker-decomposition-discriminator.md](../subagents/maker-decomposition-discriminator.md)
+- maker-reviewer Agent: [agents/maker-reviewer.md](../agents/maker-reviewer.md)
+- maker-decomposition-discriminator Agent: [agents/maker-decomposition-discriminator.md](../agents/maker-decomposition-discriminator.md)
 - MAKER Paper: arXiv:2511.09030

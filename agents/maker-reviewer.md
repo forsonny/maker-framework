@@ -1,8 +1,9 @@
 ---
 name: maker-reviewer
 description: "MAKER Reviewer - Final quality gate that reviews completed work for completeness, gaps, and doc compliance. MUST BE USED AUTOMATICALLY after all steps complete. Pipeline loops until zero issues."
-tools: Read, Grep, Glob, WebFetch, WebSearch, Bash, mcp__claude-qa__run_tests, mcp__claude-qa__get_coverage, mcp__claude-qa__check_regressions, mcp__claude-qa__generate_tests, mcp__claude-qa__check_prd_alignment, mcp__claude-qa__aggregate_qa_report
-# QA MCP tools are included above. They require the claude-qa MCP server to be configured in .mcp.json
+tools: Read, Grep, Glob, WebFetch, WebSearch, Bash, mcp__plugin_maker-framework_maker-qa__run_tests, mcp__plugin_maker-framework_maker-qa__get_coverage, mcp__plugin_maker-framework_maker-qa__check_regressions, mcp__plugin_maker-framework_maker-qa__generate_tests, mcp__plugin_maker-framework_maker-qa__check_prd_alignment, mcp__plugin_maker-framework_maker-qa__aggregate_qa_report, mcp__plugin_maker-framework_maker-qa__ping
+# QA MCP tools are included above. They are provided by the maker-qa MCP server bundled with this plugin.
+# The ping tool can be used to verify the MCP server is running before invoking other QA tools.
 model: inherit
 permissionMode: bypassPermissions
 color: pink
@@ -143,19 +144,25 @@ If tests exist or were created:
 
 #### Step 8.1: Detect QA MCP Availability
 
-Before invoking QA tools, check if the MCP server is available:
+Before invoking QA tools, verify the MCP server is available:
 
-1. Use Glob to look for `.mcp.json` in the project root
-2. Use Read to check if it contains a `claude-qa` server configuration
-3. If not found, mark Check 8 as SKIPPED with reason "QA MCP not configured"
+1. **Invoke the ping tool first** to verify the server is running:
+   ```
+   Tool: mcp__plugin_maker-framework_maker-qa__ping
+   Parameters: {}
+   ```
+   If ping succeeds, proceed to Step 8.2.
+   If ping fails or tool not found, mark Check 8 as SKIPPED with reason "QA MCP not configured"
+
+**Note:** Since this is a plugin, the QA MCP server should always be available. If ping fails, there may be a server startup issue.
 
 #### Step 8.2: Invoke QA MCP Tools
 
-If QA MCP is available, invoke the tools using MCP tool syntax:
+If QA MCP is available (ping succeeded), invoke the tools using MCP tool syntax:
 
 **Run Tests:**
 ```
-Tool: mcp__claude-qa__run_tests
+Tool: mcp__plugin_maker-framework_maker-qa__run_tests
 Parameters: {} (or {"pattern": "tests/**"} for specific tests)
 
 For projects outside current directory:
@@ -166,7 +173,7 @@ Expected output: `{ "passed": N, "failed": M, "total": X, "failures": [...] }`
 
 **Get Coverage:**
 ```
-Tool: mcp__claude-qa__get_coverage
+Tool: mcp__plugin_maker-framework_maker-qa__get_coverage
 Parameters: {} (or {"threshold": 70} to set minimum)
 
 For projects outside current directory:
@@ -177,7 +184,7 @@ Expected output: `{ "percentage": N, "uncovered_lines": [...] }`
 
 **Check Regressions:**
 ```
-Tool: mcp__claude-qa__check_regressions
+Tool: mcp__plugin_maker-framework_maker-qa__check_regressions
 Parameters: {} (or {"baseline": "path/to/baseline.json"} to use specific baseline file)
 
 For projects outside current directory:
@@ -217,7 +224,7 @@ When test changes are intentional (e.g., new tests added, old tests removed, beh
 **How to Update Baseline:**
 Invoke check_regressions with update_baseline parameter:
 ```
-Tool: mcp__claude-qa__check_regressions
+Tool: mcp__plugin_maker-framework_maker-qa__check_regressions
 Parameters: {"update_baseline": true}
 ```
 
@@ -226,8 +233,7 @@ Parameters: {"update_baseline": true}
 #### Skip Conditions
 
 Skip Check 8 entirely if ANY of these are true:
-- No `.mcp.json` file exists in project root
-- `.mcp.json` does not contain `claude-qa` server
+- Ping tool fails or is not available
 - No test files found (patterns: `**/test/**`, `**/*_test.*`, `**/*.test.*`, `**/tests/**`)
 - Task explicitly marked as "no-tests" in review request
 - All QA tool invocations fail
@@ -460,7 +466,7 @@ When QA checks fail, use these formats to report issues:
 ```
 [ISSUE N] QA Engine - Test Failures
   Severity: HIGH
-  Location: Test suite (via mcp__claude-qa__run_tests)
+  Location: Test suite (via mcp__plugin_maker-framework_maker-qa__run_tests)
   Description: 3 tests failed out of 45 total
   Evidence: Failed tests: test_login_validation, test_api_auth, test_session_timeout
   Required Fix: Fix failing tests or update test expectations if behavior change was intentional
@@ -470,7 +476,7 @@ When QA checks fail, use these formats to report issues:
 ```
 [ISSUE N] QA Engine - Coverage Below Threshold
   Severity: MEDIUM
-  Location: New code in src/auth/handler.py (via mcp__claude-qa__get_coverage)
+  Location: New code in src/auth/handler.py (via mcp__plugin_maker-framework_maker-qa__get_coverage)
   Description: Code coverage is 58%, below the 70% threshold
   Evidence: Uncovered lines: handler.py:45-67, handler.py:102-115
   Required Fix: Add tests for uncovered code paths or justify lower coverage
@@ -480,7 +486,7 @@ When QA checks fail, use these formats to report issues:
 ```
 [ISSUE N] QA Engine - Regression Detected
   Severity: CRITICAL
-  Location: Previously passing tests (via mcp__claude-qa__check_regressions)
+  Location: Previously passing tests (via mcp__plugin_maker-framework_maker-qa__check_regressions)
   Description: 2 tests that previously passed are now failing
   Evidence: Regressions: test_user_create (was PASS, now FAIL), test_data_export (was PASS, now FAIL)
   Required Fix: Investigate and fix regressions - these indicate broken functionality
