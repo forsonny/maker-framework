@@ -1,6 +1,6 @@
 {
   "name": "maker-framework",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "owner": {
     "name": "MAKER Framework Team",
     "email": "maker@example.com"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "maker-framework",
-      "version": "1.0.9",
+      "version": "1.1.0",
       "source": "./",
       "description": "Massively Decomposed Agentic Processes (MAD) - Break complex tasks into atomic steps with near-zero errors",
       "category": "automation",

@@ -5,6 +5,20 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-22
+
+### Changed
+
+- **Fixed broken import**: Removed non-portable `@../maker-framework/CLAUDE.md` import
+- Root CLAUDE.md now contains critical rules directly (always loaded)
+
+### Added
+
+- **Lazy-loaded CLAUDE.md files** for better context management:
+  - `skills/maker-orchestrator/CLAUDE.md` - Detailed orchestration (loaded when skill activates)
+  - `agents/CLAUDE.md` - Agent coordination rules (loaded when working with agents)
+- Uses Claude Code lazy loading: subdirectory CLAUDE.md files only load when those directories are accessed
+
 ## [1.0.9] - 2025-12-22
 
 ### Added
