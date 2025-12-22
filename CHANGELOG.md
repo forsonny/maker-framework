@@ -5,6 +5,18 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-12-22
+
+### Fixed
+
+- Made hook scripts cross-platform by converting from bash (.sh) to Node.js (.js)
+- Fixes issue where .sh scripts would open in text editor on Windows instead of executing
+
+### Added
+
+- `scripts/checkpoint-on-complete.js` - Cross-platform checkpoint script
+- `scripts/validate-output.js` - Cross-platform validation script
+
 ## [1.0.1] - 2025-12-22
 
 ### Fixed

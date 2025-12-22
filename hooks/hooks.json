@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.sh",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.js\"",
             "timeout": 30
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-on-complete.sh",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-on-complete.js\"",
             "timeout": 10
           }
         ]
