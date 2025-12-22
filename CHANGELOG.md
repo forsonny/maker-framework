@@ -5,6 +5,41 @@ All notable changes to the MAKER Framework plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2025-12-22
+
+### Added
+
+- **Plugin CLAUDE.md with import**: Created CLAUDE.md that imports main framework orchestration via `@../maker-framework/CLAUDE.md`
+  - Enables automatic sync between plugin and framework instructions
+  - Leverages Claude Code lazy loading for cleaner architecture
+  - Eliminates need to maintain duplicate orchestration logic
+
+### Changed
+
+- Updated SKILL.md with fully qualified subagent_type names (`maker-framework:maker-*`)
+- Updated commands/maker.md with fully qualified subagent_type names
+- All agent invocations now use `maker-framework:maker-solver` format instead of `maker-solver`
+
+## [1.0.8] - 2025-12-22
+
+### Fixed
+
+- **Critical**: Fixed orchestrator bypassing maker-solver and executing steps directly
+  - Main thread was calling Write/Edit/Bash tools directly instead of delegating to maker-solver
+  - Added explicit "CRITICAL: Solver Delegation Requirement" enforcement section
+  - Clear WRONG vs CORRECT examples showing proper Task tool usage
+
+### Changed
+
+- Updated all `subagent_type` references to use fully qualified names:
+  - `maker-solver` -> `maker-framework:maker-solver`
+  - `maker-decomposition` -> `maker-framework:maker-decomposition`
+  - `maker-red-flag` -> `maker-framework:maker-red-flag`
+  - `maker-reviewer` -> `maker-framework:maker-reviewer`
+  - And all other agents
+- Added enforcement language: "If you find yourself about to use Write, Edit, or Bash directly during step execution - STOP"
+- Section 3a now explicitly states: "MANDATORY: You MUST use the Task tool here"
+
 ## [1.0.7] - 2025-12-22
 
 ### Fixed

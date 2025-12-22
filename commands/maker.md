@@ -30,15 +30,15 @@ All file operations MUST happen through the maker-solver subagent. Your role is 
 ## Process
 
 1. Analyze the task: $ARGUMENTS
-2. Use Task tool with `subagent_type: "maker-complexity-estimator"` to assess complexity
-3. Use Task tool with `subagent_type: "maker-decomposition"` to break into atomic steps
-4. Use Task tool with `subagent_type: "maker-decomposition-discriminator"` to validate
+2. Use Task tool with `subagent_type: "maker-framework:maker-complexity-estimator"` to assess complexity
+3. Use Task tool with `subagent_type: "maker-framework:maker-decomposition"` to break into atomic steps
+4. Use Task tool with `subagent_type: "maker-framework:maker-decomposition-discriminator"` to validate
 5. FOR EACH STEP in the decomposition:
-   a. Use Task tool with `subagent_type: "maker-solver"` to execute the step
-   b. Use Task tool with `subagent_type: "maker-red-flag"` to validate output
+   a. Use Task tool with `subagent_type: "maker-framework:maker-solver"` to execute the step
+   b. Use Task tool with `subagent_type: "maker-framework:maker-red-flag"` to validate output
    c. Retry up to 3x if flagged
-6. For critical steps, use Task tool with `subagent_type: "maker-solution-discriminator"` for voting
-7. Use Task tool with `subagent_type: "maker-reviewer"` for final validation
+6. For critical steps, use Task tool with `subagent_type: "maker-framework:maker-solution-discriminator"` for voting
+7. Use Task tool with `subagent_type: "maker-framework:maker-reviewer"` for final validation
 8. Loop back and fix any issues using maker-solver, NOT direct edits
 
 ## Execution Rules

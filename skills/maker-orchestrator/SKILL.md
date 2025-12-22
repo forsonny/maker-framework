@@ -32,7 +32,7 @@ All file operations MUST happen through maker-solver subagent invocations via th
 - Creating any files yourself
 - Modifying any files yourself
 
-**If you need to create/modify a file, you MUST invoke maker-solver via Task tool.**
+**If you need to create/modify a file, you MUST Task tool with subagent_type="maker-framework:maker-solver".**
 
 ## Trigger Phrases
 
@@ -44,14 +44,14 @@ Activate when user message contains:
 
 ## Workflow
 
-1. **Complexity Assessment**: Task tool with subagent_type="maker-complexity-estimator"
-2. **Decomposition**: Task tool with subagent_type="maker-decomposition"
-3. **Validation**: Task tool with subagent_type="maker-decomposition-discriminator"
-4. **Execution**: FOR EACH STEP, invoke maker-solver via Task tool
-5. **Step Validation**: Task tool with subagent_type="maker-red-flag" after each step
-6. **Voting (Critical Steps)**: Task tool with subagent_type="maker-solution-discriminator"
-7. **Review**: Task tool with subagent_type="maker-reviewer" for final check
-8. **Fix Loop**: If issues found, fix via maker-solver and re-review until APPROVED
+1. **Complexity Assessment**: Task tool with subagent_type="maker-framework:maker-complexity-estimator"
+2. **Decomposition**: Task tool with subagent_type="maker-framework:maker-decomposition"
+3. **Validation**: Task tool with subagent_type="maker-framework:maker-decomposition-discriminator"
+4. **Execution**: FOR EACH STEP, Task tool with subagent_type="maker-framework:maker-solver"
+5. **Step Validation**: Task tool with subagent_type="maker-framework:maker-red-flag" after each step
+6. **Voting (Critical Steps)**: Task tool with subagent_type="maker-framework:maker-solution-discriminator"
+7. **Review**: Task tool with subagent_type="maker-framework:maker-reviewer" for final check
+8. **Fix Loop**: If issues found, fix via maker-framework:maker-solver and re-review until APPROVED
 
 ## Agent Coordination
 
