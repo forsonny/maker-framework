@@ -32,6 +32,7 @@ env/
 htmlcov/
 .tox/
 .nox/
+tests/javascript/node_modules/
 
 # IDE
 .idea/

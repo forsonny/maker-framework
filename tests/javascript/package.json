@@ -1,0 +1,9 @@
+{
+  "name": "maker-javascript-adapter-checks",
+  "private": true,
+  "dependencies": {
+    "jest": "30.5.2",
+    "mocha": "11.8.0",
+    "nyc": "17.1.0"
+  }
+}
