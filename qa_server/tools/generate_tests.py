@@ -215,7 +215,7 @@ def generate_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     truncation_warning = None
 
     # Use config (now actually used)
-    config = load_config()
+    config = load_config(working_dir=str(working_dir), use_cache=False)
     output_dir = arguments.get("output_dir", "tests")
 
     # Security: Validate output_dir is within working directory
@@ -266,7 +266,7 @@ def generate_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     # Validate source file paths for security
     cwd = working_dir
     for source_file in source_files:
-        source_path = Path(source_file).resolve()
+        source_path = (working_dir / source_file).resolve()
         try:
             source_path.relative_to(cwd)
         except ValueError:
@@ -282,7 +282,7 @@ def generate_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     total_tests = 0
 
     for source_file in source_files:
-        source_path = Path(source_file)
+        source_path = (working_dir / source_file).resolve()
 
         if not source_path.exists():
             generated_files.append({
@@ -320,9 +320,10 @@ def generate_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
         # Determine output path (using validated output_dir_path)
         output_path = output_dir_path / test_filename
 
-        # Check if test file already exists (warn but don't block)
-        if output_path.exists():
-            logger.warning(f"Test file already exists: {output_path}")
+        if write_files and output_path.exists():
+            generated_files.append({"source": source_file, "test_file": str(output_path),
+                                    "error": "Test file already exists; refusing to overwrite", "written": False})
+            continue
 
         # Write file to disk if requested
         written = False
@@ -460,7 +461,7 @@ def _generate_pytest_content(
         ])
 
         if style == "stub":
-            lines.append("    pass  # TODO: Implement test")
+            lines.append("    pytest.skip('Test not implemented')")
         elif style == "basic":
             lines.extend([
                 f"    # Arrange",

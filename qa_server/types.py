@@ -10,7 +10,7 @@ Expected formats per QA-MCP-INTEGRATION.md:
 - RegressionResult: { "regressions": [...], "new_passes": [...], "unchanged": N }
 """
 
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Literal
 
 # TypedDict was added to typing in Python 3.8
 # NotRequired was added in Python 3.11
@@ -24,6 +24,14 @@ try:
     from typing import NotRequired
 except ImportError:
     from typing_extensions import NotRequired
+
+
+class QAUnavailableResult(TypedDict):
+    """An unavailable QA check, distinct from passing or failing product tests."""
+    status: Literal["unavailable"]
+    code: Literal["NO_SUPPORTED_TEST_FRAMEWORK"]
+    message: str
+    tests_executed: int
 
 
 class TestFailure(TypedDict):
@@ -64,11 +72,11 @@ class CoverageResult(TypedDict):
     """Result of coverage analysis via get_coverage tool.
 
     Compatible with maker-reviewer Check 8 expectations:
-    - percentage: Coverage percentage (0-100)
+    - percentage: Coverage percentage (0-100), or None when unavailable
     - uncovered_lines: List of lines not covered by tests
     - meets_threshold: Whether coverage meets the configured threshold
     """
-    percentage: float
+    percentage: Optional[float]
     uncovered_lines: List[UncoveredLine]
     meets_threshold: bool
 

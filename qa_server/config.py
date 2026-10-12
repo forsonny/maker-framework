@@ -203,14 +203,7 @@ def _validate_positive_int(value: Any, field_name: str, default: int, min_value:
 class TestConfig:
     """Configuration for test execution."""
     framework: str = "auto"  # auto, pytest, jest, mocha, unittest
-    patterns: List[str] = field(default_factory=lambda: [
-        "**/test_*.py",
-        "**/*_test.py",
-        "**/tests/**/*.py",
-        "**/*.test.js",
-        "**/*.test.ts",
-        "**/test/**/*.js",
-    ])
+    patterns: List[str] = field(default_factory=list)  # Use each framework's discovery defaults.
     timeout_seconds: int = 300
     parallel: bool = False
     extra_args: List[str] = field(default_factory=list)
@@ -279,7 +272,7 @@ _config_cache_path: Optional[str] = None
 _config_lock = threading.Lock()
 
 
-def load_config(path: Optional[str] = None, use_cache: bool = True) -> QAConfig:
+def load_config(path: Optional[str] = None, use_cache: bool = True, working_dir: Optional[str] = None) -> QAConfig:
     """Load QA configuration from YAML file.
 
     Args:
@@ -298,7 +291,7 @@ def load_config(path: Optional[str] = None, use_cache: bool = True) -> QAConfig:
 
     # Determine config path
     if path is None:
-        path = os.environ.get("QA_CONFIG_PATH", "./qa-config.yaml")
+        path = os.environ.get("QA_CONFIG_PATH") or str(Path(working_dir or ".") / "qa-config.yaml")
 
     # Acquire lock for loading (no quick-check outside lock to avoid TOCTOU race)
     with _config_lock:

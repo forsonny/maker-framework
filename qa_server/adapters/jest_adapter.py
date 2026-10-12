@@ -157,22 +157,15 @@ class JestAdapter(BaseAdapter):
             cmd.append("--verbose")
 
         # Add parallel execution if configured (Jest runs parallel by default)
-        if config.parallel:
-            cmd.append("--maxWorkers=auto")
-        else:
+        if not config.parallel:
             # Run tests sequentially for deterministic output
             cmd.append("--runInBand")
 
-        # Add pattern filter using --testPathPattern for proper Jest pattern handling
-        # Jest expects regex patterns via --testPathPattern, not glob patterns as arguments
+        # testMatch accepts our glob contract in both Jest 29 and Jest 30.
         if pattern:
-            jest_pattern = self._convert_glob_to_jest_pattern(pattern)
-            cmd.extend(["--testPathPattern", jest_pattern])
+            cmd.extend(["--testMatch", pattern])
         elif config.patterns:
-            # Combine multiple patterns into OR regex
-            jest_patterns = [self._convert_glob_to_jest_pattern(p) for p in config.patterns]
-            combined_pattern = "|".join(f"({p})" for p in jest_patterns)
-            cmd.extend(["--testPathPattern", combined_pattern])
+            cmd.extend(["--testMatch", *config.patterns])
         # If no patterns specified, let Jest use its defaults (don't add patterns)
 
         # Add extra args from config

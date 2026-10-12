@@ -4,11 +4,7 @@
 # Test execution settings
 test:
   framework: auto          # auto, pytest, jest, mocha, unittest
-  patterns:                # Test file discovery patterns
-    - "**/test_*.py"
-    - "**/*_test.py"
-    - "**/*.test.js"
-    - "**/*.test.ts"
+  patterns: []             # Use framework defaults; specify only patterns for your framework
   timeout_seconds: 300     # Maximum test execution time
   parallel: false          # Enable parallel test execution (pytest-xdist)
   extra_args: []           # Additional arguments passed to test framework

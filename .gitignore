@@ -46,6 +46,7 @@ Thumbs.db
 
 # MAKER runtime files
 .maker-checkpoints/
+.maker/
 *.log
 
 # Local config

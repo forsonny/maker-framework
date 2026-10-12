@@ -51,16 +51,11 @@ CHECK_PRD_ALIGNMENT_SCHEMA = {
     "additionalProperties": False,
 }
 
-CHECK_PRD_ALIGNMENT_DESCRIPTION = """Check implementation alignment with PRD requirements.
+CHECK_PRD_ALIGNMENT_DESCRIPTION = """Find keyword overlap between PRD requirements and source files.
 
-Analyzes source code against Product Requirements Document to verify:
-- All requirements from PRD are addressed in implementation
-- Implementation matches expected behavior described in PRD
-- No major gaps between requirements and implementation
-
-Returns alignment score (0-100) with detailed findings.
-Use in maker-decomposition-discriminator to validate task plans against PRD.
-Use in maker-reviewer to verify completed work meets requirements."""
+Returns a heuristic alignment score (0-100) and candidate gaps for manual review.
+Comments and identifiers can match; this does not verify behavior or correctness.
+Use alongside requirement-specific tests and review, never as an acceptance gate."""
 
 
 def _extract_requirements(prd_content: str, custom_patterns: Optional[List[str]] = None) -> List[Dict[str, str]]:

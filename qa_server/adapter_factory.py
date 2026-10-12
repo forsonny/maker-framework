@@ -13,6 +13,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 from .config import QAConfig
+from .types import QAUnavailableResult
 from .adapters.base import BaseAdapter
 from .adapters.pytest_adapter import PytestAdapter
 from .adapters.jest_adapter import JestAdapter
@@ -37,6 +38,18 @@ ADAPTER_MAP = {
 }
 
 
+class NoSupportedFramework(ValueError):
+    """Auto-detection found no supported test runner."""
+
+    def to_result(self) -> QAUnavailableResult:
+        return QAUnavailableResult(
+            status="unavailable",
+            code="NO_SUPPORTED_TEST_FRAMEWORK",
+            message=str(self),
+            tests_executed=0,
+        )
+
+
 def get_adapter(
     config: Optional[QAConfig] = None,
     working_dir: Optional[str] = None,
@@ -54,7 +67,8 @@ def get_adapter(
         BaseAdapter instance for the detected or configured framework
 
     Raises:
-        ValueError: If specified framework is unknown or no framework detected
+        ValueError: If specified framework is unknown
+        NoSupportedFramework: If auto-detection finds no supported framework
 
     Priority for auto-detection:
         1. pytest (most common Python framework)
@@ -86,13 +100,12 @@ def get_adapter(
             logger.warning(f"Error detecting {adapter.name}: {e}")
             continue
 
-    # No framework detected - return unittest as fallback
-    # (it will gracefully handle "no tests found" case)
-    logger.info(
-        f"No test framework detected in {working_dir or 'current directory'}, "
-        "falling back to unittest adapter"
+    raise NoSupportedFramework(
+        f"No supported test framework detected in {working_dir or Path.cwd()}. "
+        "No tests were executed. Configure or explicitly select a supported "
+        "framework (pytest, jest, mocha, unittest) if the project uses one; "
+        "otherwise verify the project with its own test or manual acceptance workflow."
     )
-    return UnittestAdapter(working_dir=working_dir)
 
 
 def detect_all_frameworks(working_dir: Optional[str] = None) -> List[str]:

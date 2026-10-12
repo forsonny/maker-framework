@@ -10,7 +10,7 @@ import os
 
 from ..types import TestResult
 from ..config import QAConfig, load_config, sanitize_extra_args
-from ..adapter_factory import get_adapter
+from ..adapter_factory import get_adapter, NoSupportedFramework
 from ..utils import validate_working_dir
 
 
@@ -168,7 +168,7 @@ def run_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     working_dir = str(validated_path) if validated_path else None
 
     # Load config
-    config = load_config()
+    config = load_config(working_dir=working_dir, use_cache=False)
 
     # Override framework if specified
     if framework != "auto":
@@ -200,6 +200,11 @@ def run_tests_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     # Get appropriate adapter
     try:
         adapter = get_adapter(config, working_dir=working_dir)
+    except NoSupportedFramework as e:
+        return {
+            **e.to_result(),
+            **TestResult(passed=0, failed=0, total=0, failures=[], duration_ms=0, passed_names=[]),
+        }
     except ValueError as e:
         return TestResult(
             passed=0,

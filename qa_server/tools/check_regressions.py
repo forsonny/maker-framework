@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 from ..types import RegressionResult, RegressionItem, NewPassItem, NewTestItem, MissingTestItem
 from ..config import load_config, RegressionConfig
-from ..adapter_factory import get_adapter
+from ..adapter_factory import get_adapter, NoSupportedFramework
 from ..utils import validate_working_dir
 
 
@@ -38,7 +38,7 @@ def validate_baseline_path(
 
     try:
         # Resolve the path to catch ".." traversal
-        resolved = Path(baseline_path).resolve()
+        resolved = (working_dir / baseline_path).resolve()
 
         # Check if path is within working_dir
         try:
@@ -129,7 +129,7 @@ def check_regressions_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     working_dir = str(validated_path) if validated_path else None
 
     # Load config
-    config = load_config()
+    config = load_config(working_dir=working_dir, use_cache=False)
 
     # Override framework if specified
     if framework != "auto":
@@ -161,6 +161,11 @@ def check_regressions_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     try:
         adapter = get_adapter(config, working_dir=working_dir)
         current_results = adapter.run_tests(config=config.test)
+    except NoSupportedFramework as e:
+        return {
+            **e.to_result(),
+            **RegressionResult(regressions=[], new_passes=[], unchanged=0, new_tests=[], missing_tests=[]),
+        }
     except Exception as e:
         return RegressionResult(
             regressions=[{

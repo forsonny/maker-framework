@@ -77,7 +77,7 @@ def create_server() -> MCPServer:
     Returns:
         Configured MCPServer instance with all tools registered
     """
-    server = MCPServer(name="claude-qa", version="1.0.0")
+    server = MCPServer(name="maker-qa", version="1.2.1")
 
     # Register run_tests tool
     server.register_tool(

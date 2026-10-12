@@ -10,8 +10,9 @@ def validate_working_dir(working_dir: Optional[str]) -> Tuple[bool, Optional[Pat
     """
     Validate and resolve a working directory path with security checks.
 
-    Security: Only allows paths that are within the current working directory
-    or explicitly listed in QA_ALLOWED_PATHS environment variable.
+    Local mode allows cwd and QA_ALLOWED_PATHS. The global Codex launcher uses
+    explicit mode: each call must select an absolute project directory; paths
+    used by its handlers are then bounded to that selected project.
 
     Args:
         working_dir: The directory path to validate. If None, uses current working directory.
@@ -30,12 +31,16 @@ def validate_working_dir(working_dir: Optional[str]) -> Tuple[bool, Optional[Pat
         >>> is_valid
         False
     """
-    # If no working_dir provided, use current working directory
+    explicit_workspace = os.environ.get("MAKER_QA_WORKSPACE_MODE") == "explicit"
     if working_dir is None:
+        if explicit_workspace:
+            return (False, None, "Global QA calls require an absolute working_dir for the target project")
         return (True, Path.cwd(), None)
 
     # Normalize Unicode to prevent bypass attacks with different Unicode forms
     normalized_dir = unicodedata.normalize('NFC', working_dir)
+    if explicit_workspace and not Path(normalized_dir).is_absolute():
+        return (False, None, "Global QA calls require an absolute working_dir for the target project")
     
     # Resolve to absolute path
     try:
@@ -49,6 +54,9 @@ def validate_working_dir(working_dir: Optional[str]) -> Tuple[bool, Optional[Pat
 
     if not resolved_path.is_dir():
         return (False, None, f"Path is not a directory: {resolved_path}")
+
+    if explicit_workspace:
+        return (True, resolved_path, None)
 
     # Security check: validate path is allowed
     cwd = Path.cwd().resolve()

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ..types import CoverageResult
 from ..config import QAConfig, load_config
-from ..adapter_factory import get_adapter
+from ..adapter_factory import get_adapter, NoSupportedFramework
 from ..utils import validate_working_dir
 
 
@@ -89,7 +89,7 @@ def get_coverage_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     working_dir = str(validated_path) if validated_path else None
 
     # Load config
-    config = load_config()
+    config = load_config(working_dir=working_dir, use_cache=False)
 
     # Override framework if specified (with validation)
     if framework != "auto":
@@ -142,6 +142,11 @@ def get_coverage_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     # Get appropriate adapter
     try:
         adapter = get_adapter(config, working_dir=working_dir)
+    except NoSupportedFramework as e:
+        return {
+            **e.to_result(),
+            **CoverageResult(percentage=None, uncovered_lines=[], meets_threshold=False),
+        }
     except ValueError as e:
         return CoverageResult(
             percentage=0.0,

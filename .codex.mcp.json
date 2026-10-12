@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "maker-qa": {
+      "command": "python",
+      "args": ["./scripts/qa.py", "--global"],
+      "cwd": "."
+    }
+  }
+}

@@ -52,12 +52,12 @@ class WindowsStdinReader:
             try:
                 line = sys.stdin.readline()
                 if not line:  # EOF
-                    self._queue.put(None)
+                    self._queue.put("")
                     break
                 self._queue.put(line)
             except Exception:
                 # Handle stdin errors gracefully
-                self._queue.put(None)
+                self._queue.put("")
                 break
 
     def readline_with_timeout(self, timeout: float = 0.1) -> Optional[str]:
@@ -197,6 +197,10 @@ def _detect_tool_error(result: Dict[str, Any]) -> bool:
     Returns:
         True if result indicates an error condition
     """
+    # An unavailable check must not be presented as successful QA.
+    if result.get("status") == "unavailable":
+        return True
+
     # Check for explicit error field (generate_tests)
     if result.get("error"):
         return True

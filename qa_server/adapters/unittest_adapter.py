@@ -173,9 +173,8 @@ class UnittestAdapter(BaseAdapter):
         verbose: bool = False,
     ) -> TestResult:
         """Run tests using unittest discover."""
-        cmd = [sys.executable, "-m", "unittest", "discover"]
-        if verbose:
-            cmd.append("-v")
+        # Verbose output supplies stable test names for regression baselines.
+        cmd = [sys.executable, "-m", "unittest", "discover", "-v"]
 
         # NOTE: Python's unittest discover only supports a single -p pattern.
         # When multiple patterns are provided (e.g., ["test*.py", "*_test.py"]),
@@ -184,7 +183,12 @@ class UnittestAdapter(BaseAdapter):
         # patterns, consider using pytest instead, which supports multiple
         # patterns via glob matching and the --ignore option.
         if patterns:
-            cmd.extend(["-p", patterns[0]])
+            first_pattern = patterns[0].replace("\\", "/")
+            directory, _, filename = first_pattern.rpartition("/")
+            if directory and not any(char in directory for char in "*?["):
+                cmd.extend(["-s", directory])
+            cmd.extend(["-p", filename or first_pattern])
+        cmd.extend(config.extra_args)
 
         try:
             result = subprocess.run(
@@ -288,6 +292,7 @@ class UnittestAdapter(BaseAdapter):
         passed_names: List[str] = []
 
         lines = output.split("\n")
+        skipped = sum(" ... skipped" in line.lower() for line in lines)
         for line in lines:
             # Count OK/FAIL results and extract test names
             if " ... ok" in line.lower():
@@ -315,7 +320,7 @@ class UnittestAdapter(BaseAdapter):
                 if passed + failed == 0:
                     # No individual results parsed, use summary
                     if returncode == 0:
-                        passed = total_from_summary
+                        passed = max(0, total_from_summary - skipped)
                     else:
                         # Some failed but we don't know how many
                         failed = 1

@@ -143,13 +143,17 @@ class PytestAdapter(BaseAdapter):
             cmd.extend(["--json-report", f"--json-report-file={json_report_path}"])
 
         # Add pattern filter
-        if pattern:
-            cmd.append(pattern)
-        elif config.patterns:
-            cmd.extend(config.patterns)
-        else:
-            # Use default patterns for pytest
-            cmd.extend(self.get_default_patterns())
+        patterns = [pattern] if pattern else config.patterns
+        if patterns:
+            paths = []
+            for item in patterns:
+                if any(char in item for char in "*?["):
+                    paths.extend(str(p) for p in self.working_dir.glob(item) if p.is_file())
+                else:
+                    paths.append(item)
+            if not paths:
+                return self._create_empty_test_result("No tests matched the requested patterns")
+            cmd.extend(dict.fromkeys(paths))
 
         # Add extra args from config
         cmd.extend(config.extra_args)
@@ -331,7 +335,7 @@ class PytestAdapter(BaseAdapter):
 
             # Capture failure names (lines starting with FAILED)
             if line_stripped.startswith("FAILED"):
-                test_name = line_stripped.replace("FAILED", "").strip()
+                test_name = line_stripped.removeprefix("FAILED").strip().split(" - ", 1)[0]
                 # Look up extracted error message
                 error_info = error_messages.get(test_name)
                 if error_info:
@@ -375,15 +379,14 @@ class PytestAdapter(BaseAdapter):
                 failed = 1
                 total = 1  # Ensure total is consistent with failed count
 
-        # Note: Text output parsing cannot easily extract individual passed test names.
-        # passed_names will be empty - use JSON report plugin for full baseline tracking.
+        passed_names = re.findall(r"^(.+?::.+?)\s+PASSED(?:\s|$)", output, re.MULTILINE)
         return TestResult(
             passed=passed,
             failed=failed,
             total=total,
             failures=failures,
             duration_ms=duration_ms,
-            passed_names=[],
+            passed_names=passed_names,
         )
 
     def _build_source_args(self, source_patterns: List[str]) -> List[str]:
