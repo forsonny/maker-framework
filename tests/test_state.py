@@ -13,7 +13,7 @@ class StateChecks(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="maker state ")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.plan = {"task": "Example", "steps": [
             {"id": "one", "action": "Edit files", "files": ["existing.txt", "new.txt"]},
             {"id": "two", "action": "Verify", "files": []}]}
@@ -130,7 +130,7 @@ class StateChecks(unittest.TestCase):
     def test_cli_reference_paths_resolve_from_workspace_and_plan_cwd(self):
         caller_temp = tempfile.TemporaryDirectory(prefix="maker caller ")
         self.addCleanup(caller_temp.cleanup)
-        caller = Path(caller_temp.name)
+        caller = Path(caller_temp.name).resolve()
         script = Path(__file__).resolve().parents[1] / "scripts/maker_state.py"
         self.plan["context_refs"] = {"brief": "accepted brief.md", "criteria": str(caller / "criteria.md")}
         (caller / "accepted plan.json").write_text(json.dumps(self.plan), encoding="utf-8")
