@@ -43,5 +43,8 @@ jobs:
       - name: Install pinned JavaScript dependencies
         working-directory: tests/javascript
         run: npm ci
+      - name: Audit JavaScript dependencies
+        working-directory: tests/javascript
+        run: npm audit --audit-level=info
       - name: Run JavaScript adapter checks
         run: python -m unittest discover -s tests/javascript -p checks.py -v
