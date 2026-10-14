@@ -202,7 +202,8 @@ def _validate_positive_int(value: Any, field_name: str, default: int, min_value:
 @dataclass
 class TestConfig:
     """Configuration for test execution."""
-    framework: str = "auto"  # auto, pytest, jest, mocha, unittest
+    framework: str = "auto"  # auto, pytest, jest, mocha, unittest, command
+    command: Optional[List[str]] = None  # Executable and arguments; never shell-split.
     patterns: List[str] = field(default_factory=list)  # Use each framework's discovery defaults.
     timeout_seconds: int = 300
     parallel: bool = False
@@ -368,7 +369,7 @@ def load_config(path: Optional[str] = None, use_cache: bool = True, working_dir:
 
         # Validate framework enum
         framework = test_data.get("framework", "auto")
-        allowed_frameworks = ["auto", "pytest", "jest", "mocha", "unittest"]
+        allowed_frameworks = ["auto", "pytest", "jest", "mocha", "unittest", "command"]
         if framework not in allowed_frameworks:
             logger.warning(
                 "Invalid test framework '%s' in config, using 'auto'. Allowed: %s",
@@ -398,8 +399,17 @@ def load_config(path: Optional[str] = None, use_cache: bool = True, working_dir:
             "test.patterns"
         )
         
+        command = test_data.get("command")
+        if "command" in test_data and (
+            not isinstance(command, list) or not command
+            or any(not isinstance(arg, str) or "\0" in arg for arg in command)
+            or not command[0].strip()
+        ):
+            raise ValueError("test.command must be a nonempty list of strings beginning with an executable")
+
         test_config = TestConfig(
             framework=framework,
+            command=command,
             patterns=patterns,
             timeout_seconds=test_timeout,
             parallel=test_data.get("parallel", False),

@@ -1,6 +1,6 @@
 {
   "name": "maker-framework",
-  "version": "1.2.1",
+  "version": "1.3.1",
   "description": "Decompose development tasks, delegate bounded steps, verify results, and resume from durable local state in Codex.",
   "author": {"name": "forsonny"},
   "repository": "https://github.com/forsonny/maker-framework",

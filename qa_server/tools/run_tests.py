@@ -24,8 +24,8 @@ RUN_TESTS_SCHEMA = {
         },
         "framework": {
             "type": "string",
-            "description": "Test framework to use (pytest, jest, mocha, unittest, or 'auto' for detection)",
-            "enum": ["auto", "pytest", "jest", "mocha", "unittest"],
+            "description": "Framework, 'command' for the project's test.command, or 'auto' for selection",
+            "enum": ["auto", "pytest", "jest", "mocha", "unittest", "command"],
         },
         "timeout": {
             "type": "integer",
@@ -52,8 +52,9 @@ RUN_TESTS_SCHEMA = {
 
 RUN_TESTS_DESCRIPTION = """Execute test suite and return results.
 
-Runs tests using the detected or specified test framework (pytest, jest, mocha, unittest).
-Returns structured results with pass/fail counts and failure details.
+Runs tests using the detected or specified test framework, or the project's test.command.
+Frameworks return pass/fail counts. Project commands return result_kind='command',
+status, exit_code, stdout and stderr; test_counts_known=false means counts are unknown.
 
 Compatible with maker-reviewer Check 8 QA validation."""
 

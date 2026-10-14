@@ -19,6 +19,7 @@ from .adapters.pytest_adapter import PytestAdapter
 from .adapters.jest_adapter import JestAdapter
 from .adapters.mocha_adapter import MochaAdapter
 from .adapters.unittest_adapter import UnittestAdapter
+from .adapters.command_adapter import CommandAdapter
 
 
 # Adapter registry in priority order for auto-detection
@@ -35,6 +36,7 @@ ADAPTER_MAP = {
     "jest": JestAdapter,
     "mocha": MochaAdapter,
     "unittest": UnittestAdapter,
+    "command": CommandAdapter,
 }
 
 
@@ -88,6 +90,10 @@ def get_adapter(
             )
         adapter_class = ADAPTER_MAP[framework]
         return adapter_class(working_dir=working_dir)
+
+    # A project-owned command takes precedence over automatic discovery.
+    if config.test.command is not None:
+        return CommandAdapter(working_dir=working_dir)
 
     # Auto-detect framework
     for adapter_class in ADAPTER_CLASSES:

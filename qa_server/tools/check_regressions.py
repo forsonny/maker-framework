@@ -70,7 +70,7 @@ CHECK_REGRESSIONS_SCHEMA = {
         "framework": {
             "type": "string",
             "description": "Test framework to use (pytest, jest, mocha, unittest, or 'auto')",
-            "enum": ["auto", "pytest", "jest", "mocha", "unittest"],
+            "enum": ["auto", "pytest", "jest", "mocha", "unittest", "command"],
         },
         "working_dir": {
             "type": "string",
@@ -160,6 +160,13 @@ def check_regressions_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
     # Get appropriate adapter and run tests
     try:
         adapter = get_adapter(config, working_dir=working_dir)
+        if adapter.name == "command":
+            return {
+                "status": "unavailable", "code": "COMMAND_REGRESSIONS_UNAVAILABLE",
+                "message": "Project commands do not provide individual test results for baseline comparison.",
+                "tests_executed": 0,
+                **RegressionResult(regressions=[], new_passes=[], unchanged=0, new_tests=[], missing_tests=[]),
+            }
         current_results = adapter.run_tests(config=config.test)
     except NoSupportedFramework as e:
         return {

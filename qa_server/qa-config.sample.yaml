@@ -3,7 +3,16 @@
 
 # Test execution settings
 test:
-  framework: auto          # auto, pytest, jest, mocha, unittest
+  framework: auto          # auto, pytest, jest, mocha, unittest, command
+  # Optional project test command: executable followed by literal arguments.
+  # With auto, a configured command takes precedence over framework discovery.
+  # An explicit built-in framework overrides the command. Example for Lua:
+  # command: ["lua", "tests/run.lua"]
+  # Runs in the target project. Quote each argument separately, including paths
+  # with spaces. No shell expansion; use an explicit shell command if needed.
+  # Windows npm example: ["cmd.exe", "/c", "npm test"]
+  # Keep patterns empty and parallel false; put such options in the command.
+  # Reports command status/output only, not test counts, coverage or regressions.
   patterns: []             # Use framework defaults; specify only patterns for your framework
   timeout_seconds: 300     # Maximum test execution time
   parallel: false          # Enable parallel test execution (pytest-xdist)

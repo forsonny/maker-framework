@@ -27,7 +27,7 @@ GET_COVERAGE_SCHEMA = {
         "framework": {
             "type": "string",
             "description": "Test framework to use for coverage (pytest, jest, mocha, unittest, or 'auto')",
-            "enum": ["auto", "pytest", "jest", "mocha", "unittest"],
+            "enum": ["auto", "pytest", "jest", "mocha", "unittest", "command"],
         },
         "working_dir": {
             "type": "string",
@@ -93,7 +93,7 @@ def get_coverage_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     # Override framework if specified (with validation)
     if framework != "auto":
-        allowed_frameworks = ["pytest", "jest", "mocha", "unittest"]
+        allowed_frameworks = ["pytest", "jest", "mocha", "unittest", "command"]
         if framework not in allowed_frameworks:
             return CoverageResult(
                 percentage=0.0,
@@ -159,6 +159,8 @@ def get_coverage_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
         )
 
     # Check if adapter supports coverage
+    if adapter.name == "command":
+        return adapter.get_coverage(config=config.coverage, verbose=verbose)
     if not adapter.supports_coverage():
         return CoverageResult(
             percentage=0.0,

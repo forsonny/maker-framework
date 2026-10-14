@@ -53,6 +53,18 @@ call it or run multiple writers in the same checkout.
 QA: the globally installed plugin exposes `maker-qa`. Use its connected tools
 when available. Otherwise run the bundled
 `scripts/qa.py --workspace <absolute-project> --tool <name> --arguments @<json-file>`.
+For a project's own tests (Lua or other languages), set `test.command` in its
+`qa-config.yaml` to an executable/argument list, e.g. `["lua", "tests/run.lua"]`.
+With `framework: auto` the command takes precedence over discovery; an explicit
+built-in framework overrides it. `framework: command` requires that command.
+Commands run in the target project with the configured timeout and hooks.
+Keep `patterns` empty and `parallel` false; put runner options in the command.
+Results have `result_kind: command`, `status`, `exit_code`, `stdout`, `stderr`,
+and `test_counts_known: false`. Zero count fields are placeholders, not measured
+counts; `tests_executed: null` means unknown. `succeeded` establishes command
+success only. Review output against acceptance criteria; never infer tests ran
+from exit zero. Coverage and individual-test regression checks are unavailable
+for commands. Aggregation keeps successful command-only evidence `PARTIAL`.
 Always pass the actual target project as `working_dir` to connected QA tools.
 The global server requires that absolute path on every filesystem tool call and
 has no default target project. Global installation does not authorize work on

@@ -44,6 +44,8 @@ AGGREGATE_QA_REPORT_SCHEMA = {
                         "type": "object",
                         "description": "Stage-specific details (test names, coverage %, etc.)",
                     },
+                    "result_kind": {"type": "string", "enum": ["command"]},
+                    "status": {"type": "string"},
                 },
                 "required": ["stage_name", "passed", "failed"],
             },
@@ -99,14 +101,28 @@ def _calculate_summary(stage_results: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     total_checks = total_passed + total_failed
     pass_rate = (total_passed / total_checks * 100) if total_checks > 0 else 100.0
+    if total_checks == 0 and any(_command_result(stage) or _unavailable_stage(stage) for stage in stage_results):
+        pass_rate = None  # No individual test counts were collected.
 
     return {
         "total_passed": total_passed,
         "total_failed": total_failed,
         "total_skipped": total_skipped,
         "total_checks": total_checks,
-        "pass_rate": round(pass_rate, 2),
+        "pass_rate": round(pass_rate, 2) if pass_rate is not None else None,
     }
+
+
+def _command_result(stage: Dict[str, Any]) -> Dict[str, Any]:
+    if stage.get("result_kind") == "command":
+        return stage
+    details = stage.get("details", {})
+    return details if details.get("result_kind") == "command" else {}
+
+
+def _unavailable_stage(stage: Dict[str, Any]) -> bool:
+    return (stage.get("status") == "unavailable"
+            or stage.get("details", {}).get("status") == "unavailable")
 
 
 def _determine_overall_status(summary: Dict[str, Any], stage_results: List[Dict[str, Any]]) -> str:
@@ -119,6 +135,13 @@ def _determine_overall_status(summary: Dict[str, Any], stage_results: List[Dict[
     Returns:
         Status string: "PASS", "FAIL", or "PARTIAL"
     """
+    if any(_unavailable_stage(stage) for stage in stage_results):
+        return "FAIL"  # Unavailable evidence cannot establish acceptance.
+    commands = [result for stage in stage_results if (result := _command_result(stage))]
+    if any(result.get("status") != "succeeded" for result in commands):
+        return "FAIL"
+    if summary["total_failed"] == 0 and commands:
+        return "PARTIAL"  # A successful command does not establish that tests ran.
     if summary["total_failed"] == 0:
         return "PASS"
 
@@ -160,6 +183,11 @@ def _extract_stage_details(stage: Dict[str, Any]) -> Dict[str, Any]:
         "failed": stage.get("failed", 0),
         "skipped": stage.get("skipped", 0),
     }
+    command = _command_result(stage)
+    if command:
+        normalized.update(result_kind="command", status=command.get("status"), test_counts_known=False)
+    if _unavailable_stage(stage):
+        normalized["status"] = "unavailable"
 
     # Extract common detail fields
     if "coverage_percentage" in details:
@@ -202,13 +230,13 @@ def _generate_recommendations(
     # Overall status recommendations
     if overall_status == "FAIL":
         recommendations.append("CRITICAL: QA validation failed - address failing checks before proceeding")
-    elif overall_status == "PARTIAL":
+    elif overall_status == "PARTIAL" and summary["total_failed"] > 0:
         recommendations.append("WARNING: Some QA checks failed - review and address before release")
 
     # Pass rate recommendations
-    if summary["pass_rate"] < 70:
+    if summary["pass_rate"] is not None and summary["pass_rate"] < 70:
         recommendations.append(f"Pass rate ({summary['pass_rate']}%) is below 70% threshold")
-    elif summary["pass_rate"] < 90:
+    elif summary["pass_rate"] is not None and summary["pass_rate"] < 90:
         recommendations.append(f"Pass rate ({summary['pass_rate']}%) is moderate - aim for 90%+")
 
     # Stage-specific recommendations
@@ -299,6 +327,10 @@ def aggregate_qa_report_handler(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     # Generate recommendations
     recommendations = _generate_recommendations(summary, processed_stages, overall_status)
+    if any(_command_result(s) for s in stage_results):
+        recommendations.append("Project command results have unknown test counts; review their output for acceptance evidence.")
+    if any(_unavailable_stage(s) for s in stage_results):
+        recommendations.append("A QA check is unavailable; obtain acceptance evidence before treating that stage as passed.")
 
     # Build response based on format
     timestamp = datetime.now(timezone.utc).isoformat()

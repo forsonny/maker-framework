@@ -200,6 +200,8 @@ def _detect_tool_error(result: Dict[str, Any]) -> bool:
     # An unavailable check must not be presented as successful QA.
     if result.get("status") == "unavailable":
         return True
+    if result.get("result_kind") == "command":
+        return result.get("status") != "succeeded"
 
     # Check for explicit error field (generate_tests)
     if result.get("error"):
